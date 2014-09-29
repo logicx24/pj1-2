@@ -1,0 +1,6 @@
+MARS 4.4  Copyright 2003-2013 Pete Sanderson and Kenneth Vollmar
+
+Error in /Users/Gabriel/Documents/cs61c/projects/pj1-2/autostereogram.s line 52: Runtime exception at 0x00400148: address out of range 0x0000f882
+
+Processing terminated due to errors.
+
