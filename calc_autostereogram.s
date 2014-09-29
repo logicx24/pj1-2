@@ -32,6 +32,53 @@ calc_autostereogram:
 
         # YOUR CODE HERE #
 
+        addiu $t0, $zero, 0 #int i = 0
+        addiu $t1, $zero, 0 #int j = 0
+
+        OUTERLOOP:
+                INNERLOOP:
+                        blt $t0, $s4, TRUE
+                        j FALSE
+                        TRUE:
+                                mul $t2, $t1, $s2 #j*width
+                                add $t2, $t2, $t0
+                                addu $t3, $t2, $s0 #calculated array index of autosterogram
+                                addu $t4, $zero, $zero
+                                jal lfsr_random
+                                move $t4, $v0
+                                and $t4, $t4, 0xFF
+                                sb $t4, 0($t3)
+                        j CONDITION
+                        FALSE:
+                                mul $t2, $t1, $s2 #j*width
+                                add $t2, $t2, $t0
+                                addu $t3, $t2, $s0 #calculated array index of autosterogram  
+                                addu $t4, $t2, $s1 #calculated array index of depth_map  
+                                lw $t5, 0($t4)
+                                add $t5, $t5, $t0
+                                sub $t5, $t5, $s4
+
+                                mul $t2, $t1, $s2 #j*width
+                                add $t2, $t2, $t5
+                                addu $t6, $t2, $s0 #calculated array index of autosterogram
+                                lw $t7, 0($t6)
+
+                                sb $t7, 0($t3)
+                        CONDITION:
+                                addi $t1, $t1, 1
+                                blt $t1, $s3, INNERLOOP
+                                addi $t0, $t0, 1
+                                blt $t0, $s2, OUTERLOOP
+
+
+
+
+
+
+
+
+
+
         lw $s0 0($sp)
         lw $s1 4($sp)
         lw $s2 8($sp)
