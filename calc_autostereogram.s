@@ -40,7 +40,7 @@ calc_autostereogram:
         addiu $s6, $zero, 0 #int j = 0
 
         OUTERLOOP:
-                li $s6, 0
+                addiu $s6, $zero, 0
                 INNERLOOP:
                         blt $s5, $s4, TRUE # if i < S: goto TRUE
                         j FALSE # goto FALSE
