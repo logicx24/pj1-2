@@ -40,49 +40,40 @@ calc_autostereogram:
         addiu $s6, $zero, 0 #int j = 0
 
         OUTERLOOP:
+                li $s6, 0
                 INNERLOOP:
-                        blt $s5, $s4, TRUE
-                        j FALSE
+                        blt $s5, $s4, TRUE # if i < S: goto TRUE
+                        j FALSE # goto FALSE
                         TRUE:
-                        		move $s7, $ra
-                                jal lfsr_random
-                                move $ra, $s7
-                                move $t4, $v0
-                                mul $t2, $s6, $s2 #j*width
-                                add $t2, $t2, $s5 # add i to j * width
-                                addu $t3, $t2, $s0 #calculated array index of autosterogram
-                                and $t4, $t4, 0xFF
-                                sb $t4, 0($t3)
-                        		j CONDITION
+                        		move $s7, $ra # save $ra
+                                jal lfsr_random # get random number in $v0
+                                move $ra, $s7 # restore $ra
+                                move $t4, $v0 # move random number into $t4
+                                mul $t2, $s6, $s2 # $t2 = j*width
+                                add $t2, $t2, $s5 # $t2 = $t2 + i / add i to j * width
+                                addu $t3, $t2, $s0 # calculated array index of autostereogram
+                                and $t4, $t4, 0xFF # remove all but lower 8 bits/1byte of random number
+                                sb $t4, 0($t3) # store random number in autostereogram
+                        		j DONE
                         FALSE:
-                                mul $t2, $s6, $s2 #j*width
-                                add $t2, $t2, $s5
-                                addu $t3, $t2, $s0 #calculated array index of autosterogram  
-                                addu $t4, $t2, $s1 #calculated array index of depth_map  
-                                lb $t5, 0($t4)
-                                add $t5, $t5, $s5
-                                sub $t5, $t5, $s4
+                                mul $t2, $s6, $s2 # j * width
+                                add $t2, $t2, $s5 # $t2 = $t2 + i
+                                addu $t3, $t2, $s0 # calculated array index of autostereogram  
+                                addu $t4, $t2, $s1 # calculated array index of depth_map  
+                                lb $t5, 0($t4) # store depth(i, j) in $t5
+                                add $t5, $t5, $s5 # add i to depth(i, j)
+                                sub $t5, $t5, $s4 # subtract S from $t5
 
-                                mul $t2, $s6, $s2 #j*width
-                                add $t2, $t2, $t5
-                                addu $s5, $t2, $s0 #calculated array index of autosterogram
-                                lb $s6, 0($s5)
-
-                                sb $s6, 0($t3)
-                        CONDITION:
-                                addi $s6, $s6, 1
-                                blt $s6, $s3, INNERLOOP
-                        addi $s5, $s5, 1
-                        blt $s5, $s2, OUTERLOOP
-
-
-
-
-
-
-
-
-
+                                mul $t2, $s6, $s2 # j * width
+                                add $t2, $t2, $t5 # j * width + (i + depth(i ,j) - S)
+                                addu $t6, $t2, $s0 # calculated offset array index of autostereogram
+                                lb $t7, 0($t6) # load byte from autostereogram
+                                sb $t7, 0($t3) # store byte in autostereogram
+                        DONE:
+                        addi $s6, $s6, 1 # incremement j++
+                        blt $s6, $s3, INNERLOOP 
+                addi $s5, $s5, 1 # increment i++
+                blt $s5, $s2, OUTERLOOP
 
         lw $s0 0($sp)
         lw $s1 4($sp)
