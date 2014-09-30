@@ -34,15 +34,15 @@ quad2matrix:
         lw $t2, 4($a0)          # load size
         lw $t3, 16($a0)         # load gray_value
         addiu $t4, $t0, 0       # int i = x
-        addu $t6, $t0, $t2      # max x
-        addu $t7, $t1, $t2      # max y
+        addu $t6, $t0, $t2      # max x = x + size
+        addu $t7, $t1, $t2      # max y = y + size
         XLOOP:
             addiu $t5, $t1, 0   # int j = y
             YLOOP:
                 mul $t8, $t5, $a2
                 addu $t8, $t8, $t4
-                addu $t8, $a1, $t8 # matrix index
-                sb $t3, 0($t8)
+                addu $t8, $a1, $t8  # matrix index
+                sb $t3, 0($t8)      # store gray_value in matrix
                 addiu $t5, $t5, 1
                 blt $t5, $t7, YLOOP
             addiu $t4, $t4, 1
