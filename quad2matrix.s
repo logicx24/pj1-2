@@ -26,21 +26,27 @@
 quad2matrix:
     lw $t0, 0($a0)              # get leaf word
     addiu $t1, $zero, 1         # load a compare value into $t1
-    beq $t0, $t1, TRUE         # check if leaf
+    beq $t0, $t1, TRUE          # check if leaf
     j FALSE
     TRUE:
-        lw $t2, 8($a0)          # load x
-        lw $t3, 12($a0)         # load y
-        lw $t6, 4($a0)          # load size
-        lw $t8, 16($a0)         # load gray_value
-        mul $t3, $t3, $a2       # y * width
-        addu $t3, $t3, $t2      # $t3 is starting matrix index
-        addu $t4, $t3, $t6      # $t4 is stop index
-        LOOP:
-            addu $t7, $a1, $t3  # $t7 holds current matrix index
-            sb $t8, 0($t7)      # store gray value in matrix current index
-            addiu $t3, $t3, 1   # i++
-            blt $t3, $t4, LOOP
+        lw $t0, 8($a0)          # load x
+        lw $t1, 12($a0)         # load y
+        lw $t2, 4($a0)          # load size
+        lw $t3, 16($a0)         # load gray_value
+        addiu $t4, $t0, 0       # int i = x
+        addu $t6, $t0, $t2      # max x
+        addu $t7, $t1, $t2      # max y
+        XLOOP:
+            addiu $t5, $t1, 0   # int j = y
+            YLOOP:
+                mul $t8, $t5, $a2
+                addu $t8, $t8, $t4
+                addu $t8, $a1, $t8 # matrix index
+                sb $t3, 0($t8)
+                addiu $t5, $t5, 1
+                blt $t5, $t7, YLOOP
+            addiu $t4, $t4, 1
+            blt $t4, $t6, XLOOP
         j DONE
     FALSE:
         addiu $sp, $sp, -8
